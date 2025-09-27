@@ -3,13 +3,13 @@ package villagegaulois;
 import personnages.Chef;
 import personnages.Gaulois;
 
-public class Village {
+public class Village{
 	private String nom;
 	private Chef chef;
 	private Gaulois[] villageois;
 	private int nbVillageois = 0;
 	private Marche marche;
-
+	
 	public Village(String nom, int nbVillageoisMaximum, int nbEtal) {
 		this.nom = nom;
 		villageois = new Gaulois[nbVillageoisMaximum];
@@ -71,17 +71,20 @@ public class Village {
 			return find;
 		}
 		
-		private void afficherMarche() {
+		private String afficherMarche() {
 			int vide = 0;
+			StringBuilder chaine = new StringBuilder();
 			for (int i = 0; i < etals.length; i++) {
 				if(etals[i].isEtalOccupe()) {
-					System.out.println(etals[i].afficherEtal());
+					chaine.append(etals[i].afficherEtal());
 				}else {
 					vide ++;
 				}
 			}
-			System.out.println("Il reste " + vide + " " + "etals non utilises dans le marche");
+			chaine.append("Il reste " + vide + " " + "etals non utilises dans le marche.\n");
+			return chaine.toString();
 		}
+		
 	}
 
 	public String getNom() {
@@ -112,7 +115,10 @@ public class Village {
 		return null;
 	}
 
-	public String afficherVillageois() {
+	public String afficherVillageois() throws VillageSansChefException {
+		if (chef == null) {
+			throw new VillageSansChefException("Le village " + nom + " n’a pas de chef !");
+		}
 		StringBuilder chaine = new StringBuilder();
 		if (nbVillageois < 1) {
 			chaine.append("Il n'y a encore aucun habitant au village du chef "
@@ -132,9 +138,9 @@ public class Village {
 		chaine.append(vendeur.getNom() + " cherche un endroit pour vendre " + nbProduit + " " + produit + ".\n");
 		if(libre != -1) {
 			marche.utiliserEtal(libre, vendeur, produit, nbProduit);
-			chaine.append("Le vendeur " + vendeur.getNom() + " vend des " + produit + " a l'etal n° " + libre + ".\n");
+			chaine.append("Le vendeur " + vendeur.getNom() + " vend des " + produit + " a l'etal n° " + (libre+1) + ".\n");
 		}else {
-			chaine.append("il n'y a plus de place.\n");
+			chaine.append("Il n'y a pas de vendeur qui propose des" + produit + " au marché.\n");
 		}
 		return chaine.toString();
 	}
@@ -164,9 +170,11 @@ public class Village {
 	}
 	
 	public String afficherMarche() {
-		marche.afficherMarche();
-		return null;
+		
+		return marche.afficherMarche();
 	}
+	
+	
 
 
 }
